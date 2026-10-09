@@ -8,32 +8,32 @@ h1,h2,.code,.hand{font-family:'Patrick Hand','Bradley Hand','Comic Sans MS',curs
 @media(max-width:620px){.app{padding:6px}.panel{padding:10px}.home h1{font-size:46px}.rules{font-size:18px}.code{font-size:28px}.controls button{padding:9px 10px}.side{grid-template-columns:1fr}.rotate{display:block;font-size:12px;font-weight:800}.game{gap:6px}}
 @media(orientation:portrait) and (max-width:900px){.stage canvas{max-height:58vh;object-fit:contain}.rotate{color:#a35d16}}
 
-/* v8 phone landscape fit */
-@media (orientation:landscape) and (max-height:600px){
-  body{overflow:hidden}
-  .wrap{max-width:100vw;min-height:100vh;padding:8px 12px;box-sizing:border-box}
-  .game{display:flex;flex-direction:row;align-items:center;justify-content:center;gap:12px;min-height:0}
-  canvas{width:min(68vw,calc(100vh * 1.714));height:auto;max-height:calc(100vh - 52px)}
-  .aim-panel{width:min(28vw,220px);margin:0;max-height:calc(100vh - 52px)}
-}
-
-
-@media (orientation:landscape) and (max-height:600px){
-  body{overflow:hidden}
-  .app{width:100vw;height:100vh;padding:4px}
-  .roombar{margin-bottom:4px}
-  .game{display:flex;flex-direction:row;align-items:center;gap:8px;height:calc(100vh - 50px);min-height:0}
-  .stage{flex:1;min-width:0;padding:6px}
-  .stage canvas{width:100%;height:auto;max-height:calc(100vh - 72px);object-fit:contain}
-  .stage .aimingBox,.stage .note,.stage .rotate{display:none}
-  .side{width:210px;flex:0 0 210px;gap:5px;overflow:hidden}
-  .side .status{padding:6px;font-size:13px}
-  .side .result{min-height:22px;font-size:20px}
+/* v10 full-screen phone landscape */
+.rotateMsg{display:none;text-align:center;font-weight:900;font-family:'Patrick Hand','Bradley Hand',cursive;font-size:20px;margin:8px auto;color:var(--ink)}
+.landscapeBoard{display:none}
+@media (orientation:portrait) and (max-width:900px){.rotateMsg{display:block}.stage canvas{max-height:58vh;object-fit:contain}.rotate{color:#a35d16}}
+@media (orientation:landscape) and (max-height:559px){
+  html:has(#play:not(.hidden)),body:has(#play:not(.hidden)){width:100%;height:100%;min-height:100%;overflow:hidden}
+  body:has(#play:not(.hidden)){display:block}
+  .app:has(#play:not(.hidden)){width:100vw;height:100vh;padding:0;margin:0}
+  #play:not(.hidden){display:block;width:100vw;height:100vh;padding:0;margin:0}
+  #play .roombar,#play .side,#play .stage .aimingBox,#play .stage .note,#play .stage .rotate{display:none!important}
+  #play .game{display:block;width:100vw;height:calc(100vh - 48px);padding:0;margin:0}
+  #play .stage{display:block;width:100vw;height:100%;padding:0;margin:0;border:0;border-radius:0;box-shadow:none;background:#dbe6ee}
+  #game{display:block;width:100vw;height:100%;border:0!important;border-radius:0!important;touch-action:none}
+  .landscapeBoard{position:fixed;left:0;right:0;bottom:0;height:48px;display:flex;gap:4px;padding:3px 4px;background:rgba(255,253,240,.98);border-top:2px solid var(--ink);z-index:20;overflow:hidden}
+  .landscapeBoard .score{flex:1 1 0;min-width:0;height:42px;margin:0;padding:3px 5px;border:2px solid var(--ink);border-radius:3px;display:flex;align-items:center;gap:5px;overflow:hidden}
+  .landscapeBoard .score.current{border-color:var(--orange);box-shadow:0 0 0 2px var(--orange) inset}
+  .landscapeBoard .scorehead{display:flex;flex-direction:column;justify-content:center;gap:0;font-size:10px;line-height:10px;min-width:44px;max-width:74px;overflow:hidden}
+  .landscapeBoard .scorehead span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .landscapeBoard .throws{display:flex;gap:2px;margin:0;flex:1;min-width:0}
+  .landscapeBoard .box{width:23px;height:25px;flex:1 1 0;min-width:14px;max-width:30px;border-width:1px;font-size:10px}
+  .landscapeBoard .box.active{outline:0}
 }
 </style></head><body><div class="app">
 <section id="home" class="panel home"><h1>Dome Drop</h1><div class="sub">Real-time multiplayer</div><div class="rules"><div>1. Bounce the ball exactly once on the table, then enter the dome.</div><div>2. Land in a cup to score its points; a miss or foul scores 0.</div><div>3. First player to reach 250 wins immediately.</div></div><input id="name" maxlength="20" placeholder="Your name"><div class="row" style="margin-top:10px"><button class="btn primary" id="create">Create room</button><button class="btn" id="showJoin">Join room</button></div><div id="joinBox" class="hidden" style="margin-top:10px"><input id="room" maxlength="4" placeholder="4-letter code" style="text-transform:uppercase;width:100%"><button class="btn primary" id="join" style="width:100%;margin-top:8px">Join room</button></div><p id="homeMsg" class="note"></p></section>
 <section id="lobby" class="panel hidden"><div class="roombar"><div>Room <span id="roomCode" class="code"></span></div><button id="start" class="btn primary">Start game</button></div><div class="sub">Waiting for players. Only the host can start.</div><div id="lobbyPlayers" class="players"></div></section>
-<section id="play" class="hidden"><div class="roombar"><div>Room <span id="roomCode2" class="code"></span></div><div id="turnStatus" class="status">Ready</div><button id="mute" class="btn mute">🔊 Sound</button></div><div class="game"><div class="stage panel"><canvas id="game" width="1200" height="700"></canvas><div class="aimingBox">
+<div id="rotateMsg" class="rotateMsg">Turn your phone sideways to play full screen</div><section id="play" class="hidden"><div class="roombar"><div>Room <span id="roomCode2" class="code"></span></div><div id="turnStatus" class="status">Ready</div><button id="mute" class="btn mute">🔊 Sound</button></div><div class="game"><div class="stage panel"><canvas id="game" width="1200" height="700"></canvas><div class="aimingBox">
 <div class="meterTitle"><span>ANGLE</span><span id="angleHint">Watch the needle</span></div>
 <div class="meter angleTrack" id="angleMeter"><div class="needle" id="angleNeedle"></div></div>
 <div class="meterHint" id="angleInstruction">Tap to lock the angle</div>
@@ -42,7 +42,7 @@ h1,h2,.code,.hand{font-family:'Patrick Hand','Bradley Hand','Comic Sans MS',curs
 <div class="meterHint" id="powerInstruction">Tap again to throw</div>
 <button id="aimTap" class="tapButton">Tap to lock angle</button>
 </div>
-<div class="note">The meters change speed every throw. Watch carefully and tap at the moment you want.</div><div class="rotate">Works upright or sideways; sideways gives the largest play area.</div></div><aside class="side"><div id="aiming" class="status aiming">Waiting for turn…</div><div id="result" class="result"></div><div id="disconnectMsg" class="disconnect"></div><div id="board"></div></aside></div></section>
+<div class="note">The meters change speed every throw. Watch carefully and tap at the moment you want.</div><div class="rotate">Works upright or sideways; sideways gives the largest play area.</div></div><aside class="side"><div id="aiming" class="status aiming">Waiting for turn…</div><div id="result" class="result"></div><div id="disconnectMsg" class="disconnect"></div><div id="board"></div></aside></div><div id="landscapeBoard" class="landscapeBoard"></div></section>
 <section id="end" class="panel end hidden"><h1>Game over</h1><div id="winner" class="winner"></div><div id="finalBoard"></div><button id="again" class="btn primary" style="margin-top:16px">Play again</button></section>
 </div>
 <script>
@@ -97,9 +97,9 @@ function updateTurn(){
   document.getElementById('aiming').textContent=mine?'Your turn — watch the meters':`${p?p.name:'Player'} is up`;
   updateAimUI();
 }
-function renderBoard(target=document.getElementById('board')){target.innerHTML='';(roomState?.players||[]).forEach(p=>{const d=document.createElement('div');d.className='score'+(p.connected?'':' offline');const hs=p.id===roomState.currentPlayerId?' active':'';d.innerHTML=`<div class="scorehead"><span>${esc(p.name)}${p.host?' 👑':''}${p.connected?'':' · disconnected'}</span><span>${p.score}/250</span></div><div class="throws">${[0,1,2,3,4].map(i=>`<div class="box${hs}">${p.throws?.[i]??'·'}</div>`).join('')}</div>`;target.appendChild(d)})}
+function renderBoard(target=document.getElementById('board')){target.innerHTML='';(roomState?.players||[]).forEach(p=>{const d=document.createElement('div');const current=p.id===roomState.currentPlayerId;d.className='score'+(p.connected?'':' offline')+(current?' current':'');const hs=current?' active':'';d.innerHTML=`<div class="scorehead"><span>${esc(p.name)}${p.host?' 👑':''}${p.connected?'':' · disconnected'}</span><span>${p.score}/250</span></div><div class="throws">${[0,1,2,3,4].map(i=>`<div class="box${hs}">${p.throws?.[i]??'·'}</div>`).join('')}</div>`;target.appendChild(d)})}
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function applyState(s){roomState=s;roomCode=s.room;document.getElementById('roomCode').textContent=roomCode;document.getElementById('roomCode2').textContent=roomCode;const cur=s.players.find(x=>x.id===s.currentPlayerId);document.getElementById('disconnectMsg').textContent=(cur&&!cur.connected)?`${cur.name} disconnected — turn will be skipped after 20 seconds.`:'';if(s.status==='lobby'){document.getElementById('result').textContent='';document.getElementById('disconnectMsg').textContent='';state.ball=null;state.throwing=false;state.bounceMarks=[];renderLobby();show(lobby)}else if(s.status==='playing'){show(play);renderBoard();updateTurn()}else if(s.status==='finished')show(end)}
+function applyState(s){roomState=s;roomCode=s.room;document.getElementById('roomCode').textContent=roomCode;document.getElementById('roomCode2').textContent=roomCode;const cur=s.players.find(x=>x.id===s.currentPlayerId);document.getElementById('disconnectMsg').textContent=(cur&&!cur.connected)?`${cur.name} disconnected — turn will be skipped after 20 seconds.`:'';if(s.status==='lobby'){document.getElementById('result').textContent='';document.getElementById('disconnectMsg').textContent='';state.ball=null;state.throwing=false;state.bounceMarks=[];renderLobby();show(lobby)}else if(s.status==='playing'){show(play);renderBoard();renderBoard(document.getElementById('landscapeBoard'));updateTurn()}else if(s.status==='finished')show(end)}
 function renderLobby(){document.getElementById('lobbyPlayers').innerHTML=(roomState.players||[]).map(p=>`<span class="pill">${esc(p.name)}${p.id===roomState.hostId?' 👑':''}</span>`).join('');document.getElementById('start').classList.toggle('hidden',me!==roomState.hostId)}
 async function post(url,data){const h={'Content-Type':'application/json'};if(me)h['x-player-id']=me;const r=await fetch(url,{method:'POST',headers:h,body:JSON.stringify(data)});const j=await r.json();if(j.error)throw new Error(j.error);return j}
 function listen(){
@@ -135,6 +135,7 @@ function listen(){
       document.getElementById('result').textContent=m.label||(m.points?`+${m.points}!`:'Missed');
       if(m.points)scoreSound();
       renderBoard();
+      renderBoard(document.getElementById('landscapeBoard'));
       if(m.playerId===me){state.ball=null;state.throwing=false;}
       return;
     }
@@ -284,7 +285,11 @@ function drawCanvasAim(now){
   ctx.restore();
 }
 
-function draw(){ctx.clearRect(0,0,W,H);ctx.fillStyle='#dbe6ee';ctx.fillRect(0,0,W,H);ctx.fillStyle='#76543b';ctx.fillRect(0,TABLE_Y,W,H-TABLE_Y);ctx.fillStyle='#9a714d';ctx.fillRect(0,TABLE_Y-7,W,7);SUPPORTS.forEach(s=>{ctx.fillStyle='#5e4634';ctx.fillRect(s.x1,s.y,s.x2-s.x1,10)});for(const c of CUPS){const g=cupGeom(c);ctx.beginPath();ctx.moveTo(g.topL,c.rim);ctx.lineTo(g.topR,c.rim);ctx.lineTo(g.botR,g.bottom);ctx.lineTo(g.botL,g.bottom);ctx.closePath();ctx.fillStyle='rgba(225,236,242,.88)';ctx.fill();ctx.strokeStyle='#516675';ctx.lineWidth=3;ctx.stroke();ctx.fillStyle='#20313e';ctx.font='700 14px system-ui';ctx.textAlign='center';ctx.fillText(c.points,c.cx,c.rim+24)}ctx.textAlign='left';ctx.save();ctx.beginPath();ctx.rect(0,0,W,TABLE_Y);ctx.clip();ctx.beginPath();ctx.arc(DOME.cx,DOME.cy,DOME.r,rad(-131),rad(207));ctx.strokeStyle='rgba(50,120,170,.48)';ctx.lineWidth=7;ctx.stroke();ctx.restore();for(const deg of[-153,-131]){const p=circlePoint(deg);ctx.beginPath();ctx.arc(p.x,p.y,8,0,7);ctx.fillStyle='#6c8ea3';ctx.fill()}drawStartCircle();for(const m of state.bounceMarks){ctx.beginPath();ctx.arc(m.x,TABLE_Y-4,13,0,7);ctx.fillStyle=m.n===2?'#c83a32':'#fffdf0';ctx.fill();ctx.strokeStyle=m.n===2?'#c83a32':'#17324a';ctx.lineWidth=3;ctx.stroke();ctx.fillStyle=m.n===2?'#fff':'#17324a';ctx.font='900 16px system-ui';ctx.textAlign='center';ctx.fillText(String(m.n),m.x,TABLE_Y+1)}if(state.ball){ctx.beginPath();ctx.arc(state.ball.x,state.ball.y,BALL_R,0,7);ctx.fillStyle='#f28b2d';ctx.fill();ctx.strokeStyle='#7b4315';ctx.lineWidth=2;ctx.stroke()}drawCanvasAim(performance.now())}
+function isLandscapeFull(){return matchMedia('(orientation:landscape) and (max-height:559px)').matches}
+function resizeCanvas(){const dpr=Math.max(1,window.devicePixelRatio||1);if(isLandscapeFull()){const w=window.innerWidth,h=Math.max(1,window.innerHeight-48);canvas.style.width=w+'px';canvas.style.height=h+'px';canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);ctx.setTransform(dpr*w/1184,0,0,dpr*h/528,-8*dpr,-104*dpr)}else{canvas.style.width='100%';canvas.style.height='auto';canvas.width=Math.round(W*dpr);canvas.height=Math.round(H*dpr);ctx.setTransform(dpr,0,0,dpr,0,0)}}
+function draw(){if(isLandscapeFull()){const cw=canvas.width,ch=canvas.height,s=Math.min(cw/1184,ch/528),ox=(cw-1184*s)/2-8*s,oy=(ch-528*s)/2-104*s;ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle='#dbe6ee';ctx.fillRect(0,0,cw,ch);ctx.fillStyle='#76543b';ctx.fillRect(0,oy+TABLE_Y*s,cw,ch);ctx.fillStyle='#9a714d';ctx.fillRect(0,oy+(TABLE_Y-7)*s,cw,7*s);ctx.setTransform(s,0,0,s,ox,oy);drawWorld();ctx.restore();drawLandscapeLabel();return;}ctx.clearRect(0,0,W,H);drawWorld();}
+function drawWorld(){ctx.fillStyle='#dbe6ee';ctx.fillRect(0,0,W,H);ctx.fillStyle='#76543b';ctx.fillRect(0,TABLE_Y,W,H-TABLE_Y);ctx.fillStyle='#9a714d';ctx.fillRect(0,TABLE_Y-7,W,7);SUPPORTS.forEach(s=>{ctx.fillStyle='#5e4634';ctx.fillRect(s.x1,s.y,s.x2-s.x1,10)});for(const c of CUPS){const g=cupGeom(c);ctx.beginPath();ctx.moveTo(g.topL,c.rim);ctx.lineTo(g.topR,c.rim);ctx.lineTo(g.botR,g.bottom);ctx.lineTo(g.botL,g.bottom);ctx.closePath();ctx.fillStyle='rgba(225,236,242,.88)';ctx.fill();ctx.strokeStyle='#516675';ctx.lineWidth=3;ctx.stroke();ctx.fillStyle='#20313e';ctx.font='700 14px system-ui';ctx.textAlign='center';ctx.fillText(c.points,c.cx,c.rim+24)}ctx.textAlign='left';ctx.save();ctx.beginPath();ctx.rect(0,0,W,TABLE_Y);ctx.clip();ctx.beginPath();ctx.arc(DOME.cx,DOME.cy,DOME.r,rad(-131),rad(207));ctx.strokeStyle='rgba(50,120,170,.48)';ctx.lineWidth=7;ctx.stroke();ctx.restore();for(const deg of[-153,-131]){const p=circlePoint(deg);ctx.beginPath();ctx.arc(p.x,p.y,8,0,7);ctx.fillStyle='#6c8ea3';ctx.fill()}drawStartCircle();for(const m of state.bounceMarks){ctx.beginPath();ctx.arc(m.x,TABLE_Y-4,13,0,7);ctx.fillStyle=m.n===2?'#c83a32':'#fffdf0';ctx.fill();ctx.strokeStyle=m.n===2?'#c83a32':'#17324a';ctx.lineWidth=3;ctx.stroke();ctx.fillStyle=m.n===2?'#fff':'#17324a';ctx.font='900 16px system-ui';ctx.textAlign='center';ctx.fillText(String(m.n),m.x,TABLE_Y+1)}if(state.ball){ctx.beginPath();ctx.arc(state.ball.x,state.ball.y,BALL_R,0,7);ctx.fillStyle='#f28b2d';ctx.fill();ctx.strokeStyle='#7b4315';ctx.lineWidth=2;ctx.stroke()}drawCanvasAim(performance.now())}
+function drawLandscapeLabel(){ctx.save();const dpr=window.devicePixelRatio||1;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.fillStyle='rgba(255,253,240,.92)';ctx.strokeStyle='#17324a';ctx.lineWidth=2;ctx.beginPath();ctx.roundRect(12,10,190,34,5);ctx.fill();ctx.stroke();ctx.fillStyle='#17324a';ctx.font='900 15px system-ui';ctx.textAlign='left';const cur=roomState?.players?.find(p=>p.id===roomState?.currentPlayerId);ctx.fillText(`Room ${roomCode} · ${roomState?.currentPlayerId===me?'Your turn':(cur?.name||'Watching')}`,22,32);ctx.restore()}
 function drawStartCircle(){
   const setup=state.aimSetup;
   if(!setup||state.throwing)return;
@@ -312,6 +317,7 @@ document.getElementById('start').onclick=()=>post('/api/action',{type:'start',ro
 document.getElementById('again').onclick=()=>post('/api/action',{type:'playAgain',room:roomCode});
 document.getElementById('mute').onclick=()=>{soundOn=!soundOn;document.getElementById('mute').textContent=soundOn?'🔊 Sound':'🔇 Muted'};
 
+window.addEventListener('resize',resizeCanvas);window.addEventListener('orientationchange',()=>setTimeout(resizeCanvas,80));resizeCanvas();
 let last=performance.now(),acc=0;
 function loop(now){
   acc+=Math.min(.05,(now-last)/1000);
